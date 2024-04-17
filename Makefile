@@ -1,7 +1,7 @@
 clean:
 	rm -rf bin/* 
 
-build:
+compile:
 	go build -o bin/mmtime cmd/main.go
 
 runbin:
@@ -13,18 +13,26 @@ run:
 test:
 	echo "(Makefile) tests are not setup yet"
 
+
+
+
+clean_directories: 
+	rm -rf ${HOME}/.config/mmtime
+	rm -rf ${HOME}/.local/share/mmtime 
+
 create_directories: 
-	# create the needed directories
-	# file creation is taken care of by the program itself
-	mkdir ~/.config/mmtime &&
-	mkdir ~/.local/share/mmtime &&
+	mkdir ${HOME}/.config/mmtime 2>/dev/null
+	mkdir ${HOME}/.local/share/mmtime 2>/dev/null
 
 make_bin_global: 
 	mv ./bin/mmtime /usr/local/bin 
 
-install: clean build create_directories make_bin_global
+launch: 
+	/usr/local/bin/mmtime 
 
-launch: /usr/local/bin/mmtime 
+build: clean compile clean_directories create_directories 
+
+install: make_bin_global launch
 
 	
 
