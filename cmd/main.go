@@ -85,31 +85,31 @@ func main() {
 
 func getTasksFromConf() []types.Task {
 
-	filename := "/home/massigy/.config/mmtime/targets"
-
-	// open the ~/.config/mmtime/targets file
-	file, err := os.Open(filename)
-
-	if err != nil {
-		// create the file and exit
-		err := os.WriteFile(
-			filename,
-			[]byte(`# Add the applications that you want to track your usage time in, each application in a seperated line`),
-			0666,
-		)
-		utils.Check(err)
-		return nil
-	}
-
-	defer file.Close()
-
 	// load the tokens from the file to a slice of tasks
 	tasks := []types.Task{}
+	filename := "/home/massigy/.config/mmtime/targets"
+
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	utils.Check(err)
+	defer file.Close()
 
 	chars, err := ioutil.ReadAll(file)
 	utils.Check(err)
 
 	fileContent := string(chars)
+
+	if len(fileContent) <= 1 {
+		file.WriteString("# Add the applications that you want to track your usage time in, each application in a seperated line\n")
+		file.WriteString("\n")
+		file.WriteString(os.Args[0]) //file just created, add curr process name to it, the user will change it as he wants
+		tasks = append(tasks, types.Task{
+			Name:       os.Args[0],
+			LaunchedAt: time.Now(),
+		})
+
+		return tasks
+	}
+
 	tasksNames := strings.Split(fileContent, "\n")
 
 	for _, name := range tasksNames {
