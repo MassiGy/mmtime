@@ -222,6 +222,7 @@ func monitorTasks(tasks *[]types.Task) {
 func saveCurrentStats(tasks []types.Task) {
 	// db file
 	filename := "/home/massigy/.local/share/mmtime/targets.stats.db"
+	fmt.Println("on save, $USER: ", os.Getenv("USER"))
 
 	// open the file for RW(do not create to add the desc comment at first)
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
