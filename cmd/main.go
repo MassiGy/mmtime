@@ -181,7 +181,7 @@ func saveCurrentStats(tasks []types.Task) {
 	filename := "/home/massigy/.local/share/mmtime/targets.stats.db"
 
 	// open the file for RW(do not create to add the desc comment at first)
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
 
 	utils.Check(err)
 	defer file.Close()
