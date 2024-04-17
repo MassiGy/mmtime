@@ -18,15 +18,17 @@ import (
 func main() {
 	filename := "/home/massigy/.config/mmtime/targets"
 
-	// read the ~/.config/mmtime/targets file
+	// open the ~/.config/mmtime/targets file
 	file, err := os.Open(filename)
+
 	if err != nil {
-		// create the file
-		os.WriteFile(
+		// create the file and exit
+		err := os.WriteFile(
 			filename,
 			[]byte("# Add the applications that you want to track your usage time in, each application in a seperated line\n"),
 			0666,
 		)
+		utils.Check(err)
 		return
 	}
 
@@ -60,16 +62,17 @@ func main() {
 	monitorTasks(&tasks)
 
 	// setup a ticker to listen to
-	ticker := time.NewTicker(10 * time.Second)
+	tickCycle := 10 * time.Second
+	ticker := time.NewTicker(tickCycle)
 
 	// create a channel to which POSIX signals will be deleivered to
 	// make it a buffered channel (manage only one signal at the time)
-	sigPause := make(chan os.Signal, 1)
+	sigPower := make(chan os.Signal, 1)
 	sigContinue := make(chan os.Signal, 1)
 	sigTerm := make(chan os.Signal, 1)
 
-	// SIGSTOP can not be trapped, but we are leaving it for demo purposes
-	signal.Notify(sigPause, syscall.SIGSTOP)
+	// SIGPWR is sent when the battery|power level is low
+	signal.Notify(sigPower, syscall.SIGPWR)
 
 	signal.Notify(sigContinue, syscall.SIGCONT)
 	signal.Notify(sigTerm, syscall.SIGABRT, syscall.SIGTERM, syscall.SIGINT)
@@ -80,7 +83,7 @@ func main() {
 			{
 				monitorTasks(&tasks)
 			}
-		case <-sigPause:
+		case <-sigPower:
 			{
 				// make the ticker.C = nil so as
 				// its case will be ignored
@@ -89,11 +92,11 @@ func main() {
 		case <-sigContinue:
 			{
 				// make the ticker.C valid again (!nil)
-				ticker = time.NewTicker(10 * time.Second)
+				ticker = time.NewTicker(tickCycle)
 			}
 		case <-sigTerm:
 			{
-				os.Exit(0)
+				return
 			}
 		}
 	}
@@ -123,11 +126,12 @@ func monitorTasks(tasks *[]types.Task) {
 
 	for _, line := range stdOutLines {
 		// every line is a process name
+
 		for i, task := range *tasks {
 
 			if strings.Compare(strings.ToLower(line), strings.ToLower(task.Name)) == 0 {
 
-				if (*tasks)[i].LaunchedAt.Equal(nonInitializedTimeInstant) {
+				if task.LaunchedAt.Equal(nonInitializedTimeInstant) {
 					(*tasks)[i].LaunchedAt = time.Now()
 					continue
 				}
@@ -136,6 +140,8 @@ func monitorTasks(tasks *[]types.Task) {
 			}
 		}
 	}
+
+	// log the tasks
 	for _, task := range *tasks {
 		fmt.Println(task)
 	}
