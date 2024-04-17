@@ -52,15 +52,22 @@ func main() {
 				newConfigTasks := getTasksFromConf()
 
 				for _, task := range newConfigTasks {
+
+					alreadyMonitored := false
+					lName := strings.ToLower(task.Name)
+
 					for _, monitoredTask := range tasks {
 
 						// only append non monitored yet tasks
-						if strings.Compare(monitoredTask.Name, task.Name) != 0 {
-							tasks = append(tasks, types.Task{
-								Name:       task.Name,
-								LaunchedAt: time.Now(),
-							})
+						if strings.Compare(strings.ToLower(monitoredTask.Name), lName) == 0 {
+							alreadyMonitored = true
 						}
+					}
+					if !alreadyMonitored {
+						tasks = append(tasks, types.Task{
+							Name:       task.Name,
+							LaunchedAt: time.Now(),
+						})
 					}
 				}
 			}
@@ -143,7 +150,7 @@ func getTasksFromConf() []types.Task {
 		}
 
 		// make sure to not allow duplicates
-		if strings.Contains(tasksNamesInStr, name) == false {
+		if !strings.Contains(tasksNamesInStr, name) {
 			continue
 		}
 
@@ -183,12 +190,16 @@ func monitorTasks(tasks *[]types.Task) {
 
 	var nonInitializedTimeInstant time.Time
 
-	for _, line := range stdOutLines {
-		// every line is a process name
+	for i, task := range *tasks {
 
-		for i, task := range *tasks {
+		(*tasks)[i].Running = false
+
+		for _, line := range stdOutLines {
+			// every line is a process name
 
 			if strings.Compare(strings.ToLower(line), strings.ToLower(task.Name)) == 0 {
+
+				(*tasks)[i].Running = true
 
 				if task.LaunchedAt.Equal(nonInitializedTimeInstant) {
 					(*tasks)[i].LaunchedAt = time.Now()
@@ -201,9 +212,11 @@ func monitorTasks(tasks *[]types.Task) {
 	}
 
 	// log the tasks
+	fmt.Println("----------Logging all tasks---------------")
 	for _, task := range *tasks {
 		fmt.Println(task)
 	}
+	fmt.Println("------------------------------------------")
 }
 
 func saveCurrentStats(tasks []types.Task) {
@@ -234,8 +247,13 @@ func saveCurrentStats(tasks []types.Task) {
 	// write the stats to the file
 	for _, task := range tasks {
 
-		// if the current task was not used, do not write it to db file
+		// ignore task/process that did not run at all,
 		if task.LaunchedAt.Equal(nonInitializedTimeInstant) {
+			continue
+		}
+
+		// ignore task/process that've stopped running,
+		if !task.Running {
 			continue
 		}
 

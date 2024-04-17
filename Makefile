@@ -30,11 +30,11 @@ setup_files_ownership:
 
 
 make_bin_global: 
-	cp bin/mmtime /usr/local/bin/mmtime 
+	cp bin/mmtime /usr/local/bin/ 
 	#ln -s /home/massigy/.local/share/mmtime/mmtime /usr/local/bin/mmtime 
 
 launch: 
-	mmtime &
+	mmtime &	
 
 build: clean compile clean_directories create_directories 
 
