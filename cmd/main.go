@@ -33,18 +33,36 @@ func main() {
 	sigPower := make(chan os.Signal, 1)
 	sigContinue := make(chan os.Signal, 1)
 	sigTerm := make(chan os.Signal, 1)
+	sigUsr1 := make(chan os.Signal, 1) // will be used to update tasks slice with new config
 
 	// SIGPWR=battery|power lvl low (shutdown|hibernation|suspend mode)
 	signal.Notify(sigPower, syscall.SIGPWR)
-
 	signal.Notify(sigContinue, syscall.SIGCONT)
 	signal.Notify(sigTerm, syscall.SIGABRT, syscall.SIGTERM, syscall.SIGINT)
+	signal.Notify(sigUsr1, syscall.SIGUSR1)
 
 	for {
 		select {
 		case <-ticker.C:
 			{
 				monitorTasks(&tasks)
+			}
+		case <-sigUsr1:
+			{
+				newConfigTasks := getTasksFromConf()
+
+				for _, task := range newConfigTasks {
+					for _, monitoredTask := range tasks {
+
+						// only append non monitored yet tasks
+						if strings.Compare(monitoredTask.Name, task.Name) != 0 {
+							tasks = append(tasks, types.Task{
+								Name:       task.Name,
+								LaunchedAt: time.Now(),
+							})
+						}
+					}
+				}
 			}
 		case <-sigPower:
 			{
@@ -111,6 +129,7 @@ func getTasksFromConf() []types.Task {
 	}
 
 	tasksNames := strings.Split(fileContent, "\n")
+	tasksNamesInStr := strings.Join(tasksNames, " ")
 
 	for _, name := range tasksNames {
 		// ignore commented lines
@@ -122,6 +141,17 @@ func getTasksFromConf() []types.Task {
 		if len(name) <= 1 {
 			continue
 		}
+
+		// make sure to not allow duplicates
+		if strings.Contains(tasksNamesInStr, name) == false {
+			continue
+		}
+
+		// remove current name from the lists of tasks to monitor
+		tasksNamesInStr = strings.ReplaceAll(tasksNamesInStr, name, "")
+		tasksNamesInStr = strings.ReplaceAll(tasksNamesInStr, strings.Title(name), "")
+		tasksNamesInStr = strings.ReplaceAll(tasksNamesInStr, strings.ToUpper(name), "")
+		tasksNamesInStr = strings.ReplaceAll(tasksNamesInStr, strings.ToLower(name), "")
 
 		tasks = append(tasks, types.Task{
 			Name: name,

@@ -34,7 +34,7 @@ make_bin_global:
 	#ln -s /home/massigy/.local/share/mmtime/mmtime /usr/local/bin/mmtime 
 
 launch: 
-	mmtime 
+	mmtime &
 
 build: clean compile clean_directories create_directories 
 
