@@ -1,6 +1,4 @@
 TODOS:
-- Re-read the code and see if everything is ok before exporting this to my linux machine.
-- Check the duplicates escaping on the targets file.
 - Write the logs to a file ~/.local/share/mmtime/mmtime.log and then on system wake up from hibernation 
 or suspend, see which signal is sent to the process.
 Check if SIGSTOP is sent to the process on hibernation/suspend, and check if SIGCONT is sent to the process 
