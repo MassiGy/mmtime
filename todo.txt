@@ -1,5 +1,4 @@
 TODOS:
-- Make the logging use my async logger program
 
 Bonus: 
 - Create an applet for this little program (https://bazaar.launchpad.net/~geod/indicator-workspaces/main/view/head:/indicator-workspaces)

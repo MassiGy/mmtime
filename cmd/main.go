@@ -31,15 +31,15 @@ func main() {
 
 	// create a channel to which POSIX signals will be deleivered to
 	// make it a buffered channel (manage only one signal at the time)
-	sigPower := make(chan os.Signal, 1)
+	sigInterupt := make(chan os.Signal, 1)
 	sigContinue := make(chan os.Signal, 1)
 	sigTerm := make(chan os.Signal, 1)
 	sigUsr1 := make(chan os.Signal, 1) // will be used to update tasks slice with new config
 
 	// SIGPWR=battery|power lvl low (shutdown|hibernation|suspend mode)
-	signal.Notify(sigPower, syscall.SIGPWR)
+	signal.Notify(sigInterupt, syscall.SIGPWR, syscall.SIGINT)
 	signal.Notify(sigContinue, syscall.SIGCONT)
-	signal.Notify(sigTerm, syscall.SIGABRT, syscall.SIGTERM, syscall.SIGINT)
+	signal.Notify(sigTerm, syscall.SIGABRT, syscall.SIGTERM)
 	signal.Notify(sigUsr1, syscall.SIGUSR1)
 
 	for {
@@ -72,7 +72,7 @@ func main() {
 					}
 				}
 			}
-		case <-sigPower:
+		case <-sigInterupt:
 			{
 				// make the ticker.C = nil so as
 				// its case will be ignored
