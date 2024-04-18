@@ -17,13 +17,15 @@ run:
 	go run cmd/main.go
 
 test:
-	echo "(Makefile) tests are not setup yet"
+	echo "(Makefile) tests are not setup yet";
 
 
 make_bin_shared: 
-	ln -s $(shell pwd)/bin/${BINARY_NAME} ${SHARED_DIR}/${BINARY_NAME}
-	echo "The ${BINARY_NAME} binary file can be found in ${SHARED_DIR}"
-	echo ""
+	ln -s $(shell pwd)/bin/${BINARY_NAME} ${SHARED_DIR}/${BINARY_NAME};
+	echo "The ${BINARY_NAME} binary file can be found in ${SHARED_DIR}";
+
+	bash ./scripts/setup_aliases.sh;
+	echo "Added ${BINARY_NAME} aliases to .bashrc|.bash_aliases|.zshrc|.zsh_aliases";
 
 launch: 
 	${SHARED_DIR}/${BINARY_NAME}
@@ -34,7 +36,6 @@ setup:
 	bash ./scripts/setup_config_dir.sh 
 	bash ./scripts/setup_targets_file.sh 
 
-	echo ""
 
 	bash ./scripts/setup_shared_dir.sh
 	bash ./scripts/setup_db_file.sh
@@ -43,7 +44,6 @@ install: setup make_bin_shared launch
 
 rm_local_bin: 
 	rm -rf ${SHARED_DIR}/${BINARY_NAME}
-	echo ""
 
 
 
@@ -51,7 +51,6 @@ rm_local_bin:
 uninstall: rm_local_bin 
 	rm -rf ${CONFIG_DIR}
 	rm -rf ${SHARED_DIR}
-	echo ""
 
 
 

@@ -1,4 +1,5 @@
 TODOS:
+- Correct how stats are saved
 - Make the logging use my async logger program
 
 Bonus: 

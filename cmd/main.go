@@ -97,7 +97,9 @@ func main() {
 						continue
 					}
 
+					// reset the counters
 					tasks[i].LaunchedAt = time.Now()
+					tasks[i].UsedFor = time.Since(tasks[i].LaunchedAt)
 				}
 
 			}
@@ -118,9 +120,6 @@ func getTasksFromConf() []types.Task {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	utils.Check(err)
 	defer file.Close()
-
-	err = os.Chown(filename, os.Getuid(), os.Getgid())
-	utils.Check(err)
 
 	chars, err := ioutil.ReadAll(file)
 	utils.Check(err)
@@ -205,6 +204,12 @@ func monitorTasks(tasks *[]types.Task) {
 				(*tasks)[i].UsedFor = time.Since((*tasks)[i].LaunchedAt)
 			}
 		}
+
+		// if task stopped, update the launchedAt to now so as when it gets back up,
+		// the time.Since() value won't be wrong by much (you must substract the prev usage time)
+		if !(*tasks)[i].Running && !(*tasks)[i].LaunchedAt.Equal(nonInitializedTimeInstant) {
+			(*tasks)[i].LaunchedAt = time.Now().Add(-(*tasks)[i].UsedFor)
+		}
 	}
 
 	// log the tasks
@@ -244,9 +249,11 @@ func saveCurrentStats(tasks []types.Task) {
 			continue
 		}
 
-		// ignore task/process that've stopped running,
 		if !task.Running {
-			continue
+			if task.UsedFor < time.Second {
+				// ignore the task that was not used
+				continue
+			}
 		}
 
 		file.WriteString(
