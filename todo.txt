@@ -1,4 +1,14 @@
 TODOS:
+- Re-read the code and see if everything is ok before exporting this to my linux machine.
+- Check the duplicates escaping on the targets file.
+- Write the logs to a file ~/.local/share/mmtime/mmtime.log and then on system wake up from hibernation 
+or suspend, see which signal is sent to the process.
+Check if SIGSTOP is sent to the process on hibernation/suspend, and check if SIGCONT is sent to the process 
+on hibernation/suspend wake up. 
 
 Bonus: 
 - Create an applet for this little program (https://bazaar.launchpad.net/~geod/indicator-workspaces/main/view/head:/indicator-workspaces)
+
+
+Notes:
+- To act on power mode change, you need to add hooks for power mode changement; https://help.ubuntu.com/community/PowerManagement/ReducedPower

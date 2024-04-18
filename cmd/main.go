@@ -17,13 +17,14 @@ import (
 )
 
 func main() {
+	filename := os.Getenv("HOME") + "/.config/" + vars.GetDirName() + "/targets"
 	tasks := getTasksFromConf()
+
 	if len(tasks) == 0 {
-		// targets file just got created
-		return
+		panic(filename + " should not be blank! (Read the README.md for a proper setup).")
 	}
 
-	monitorTasks(&tasks) // fst call to register tasks
+	// monitorTasks(&tasks) // fst call to register tasks
 
 	// setup a ticker to listen to
 	tickCycle := 10 * time.Second
@@ -31,15 +32,15 @@ func main() {
 
 	// create a channel to which POSIX signals will be deleivered to
 	// make it a buffered channel (manage only one signal at the time)
-	sigInterupt := make(chan os.Signal, 1)
+	sigAbrt := make(chan os.Signal, 1)
 	sigContinue := make(chan os.Signal, 1)
 	sigTerm := make(chan os.Signal, 1)
 	sigUsr1 := make(chan os.Signal, 1) // will be used to update tasks slice with new config
 
 	// SIGPWR=battery|power lvl low (shutdown|hibernation|suspend mode)
-	signal.Notify(sigInterupt, syscall.SIGPWR, syscall.SIGINT)
+	signal.Notify(sigTerm, syscall.SIGPWR, syscall.SIGTERM)
 	signal.Notify(sigContinue, syscall.SIGCONT)
-	signal.Notify(sigTerm, syscall.SIGABRT, syscall.SIGTERM)
+	signal.Notify(sigAbrt, syscall.SIGABRT)
 	signal.Notify(sigUsr1, syscall.SIGUSR1)
 
 	for {
@@ -50,8 +51,10 @@ func main() {
 			}
 		case <-sigUsr1:
 			{
+				// re-read the configuration
 				newConfigTasks := getTasksFromConf()
 
+				// add the non-monitored yet tasks
 				for _, task := range newConfigTasks {
 
 					alreadyMonitored := false
@@ -59,11 +62,11 @@ func main() {
 
 					for _, monitoredTask := range tasks {
 
-						// only append non monitored yet tasks
 						if strings.Compare(strings.ToLower(monitoredTask.Name), lName) == 0 {
 							alreadyMonitored = true
 						}
 					}
+					// only append non monitored yet tasks
 					if !alreadyMonitored {
 						tasks = append(tasks, types.Task{
 							Name:       task.Name,
@@ -72,7 +75,7 @@ func main() {
 					}
 				}
 			}
-		case <-sigInterupt:
+		case <-sigTerm:
 			{
 				// make the ticker.C = nil so as
 				// its case will be ignored
@@ -81,6 +84,8 @@ func main() {
 				// flush the current stats to db
 				saveCurrentStats(tasks)
 
+				// run the defered actions, then stop the process
+				return
 			}
 		case <-sigContinue:
 			{
@@ -103,7 +108,7 @@ func main() {
 				}
 
 			}
-		case <-sigTerm:
+		case <-sigAbrt:
 			{
 				return
 			}
