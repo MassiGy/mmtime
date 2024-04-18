@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"mmtime/types"
 	"mmtime/utils"
+	"mmtime/vars"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -112,11 +113,14 @@ func getTasksFromConf() []types.Task {
 
 	// load the tokens from the file to a slice of tasks
 	tasks := []types.Task{}
-	filename := "/home/massigy/.config/mmtime/targets"
+	filename := os.Getenv("HOME") + "/.config/" + vars.GetDirName() + "/targets"
 
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	utils.Check(err)
 	defer file.Close()
+
+	err = os.Chown(filename, os.Getuid(), os.Getgid())
+	utils.Check(err)
 
 	chars, err := ioutil.ReadAll(file)
 	utils.Check(err)
@@ -124,15 +128,7 @@ func getTasksFromConf() []types.Task {
 	fileContent := string(chars)
 
 	if len(fileContent) <= 1 {
-		file.WriteString("# Add the applications that you want to track your usage time in, each application in a seperated line\n")
-		file.WriteString("\n")
-		file.WriteString(os.Args[0]) //file just created, add curr process name to it, the user will change it as he wants
-		tasks = append(tasks, types.Task{
-			Name:       os.Args[0],
-			LaunchedAt: time.Now(),
-		})
-
-		return tasks
+		panic(filename + " should not be blank !")
 	}
 
 	tasksNames := strings.Split(fileContent, "\n")
@@ -221,8 +217,7 @@ func monitorTasks(tasks *[]types.Task) {
 
 func saveCurrentStats(tasks []types.Task) {
 	// db file
-	filename := "/home/massigy/.local/share/mmtime/targets.stats.db"
-	fmt.Println("on save, $USER: ", os.Getenv("USER"))
+	filename := os.Getenv("HOME") + "/.local/share/" + vars.GetDirName() + "/targets.stats.db"
 
 	// open the file for RW(do not create to add the desc comment at first)
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
@@ -236,11 +231,7 @@ func saveCurrentStats(tasks []types.Task) {
 
 	fileContent := string(chars)
 	if len(fileContent) <= 1 {
-		// file just got created, write the dsc comment into it
-		file.WriteString("# This file stores the mmtime stats according to your time usage of the applications that you specified in ~/.config/mmtime/targets\n")
-		file.WriteString("# For every application/process just sum up the usage times for any given date to get the total usage during that day.\n")
-		file.WriteString("\n")
-		file.WriteString("Process\tDate\t\tUsage\n")
+		panic(filename + " should not be blank !")
 	}
 
 	var nonInitializedTimeInstant time.Time

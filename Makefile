@@ -1,11 +1,17 @@
+BINARY_NAME:=$(shell cat ./BINARY_NAME)
+VERSION:=$(shell cat ./VERSION)
+CONFIG_DIR:=${HOME}/.config/${BINARY_NAME}-${VERSION}
+SHARED_DIR:=${HOME}/.local/share/${BINARY_NAME}-${VERSION}
+
+
 clean:
 	rm -rf bin/* 
 
 compile:
-	go build -o bin/mmtime cmd/main.go
+	go build -o bin/${BINARY_NAME} cmd/main.go
 
 runbin:
-	./bin/mmtime
+	./bin/${BINARY_NAME}
 
 run:
 	go run cmd/main.go
@@ -14,40 +20,38 @@ test:
 	echo "(Makefile) tests are not setup yet"
 
 
-
-
-clean_directories: 
-	rm -rf /home/massigy/.config/mmtime
-	rm -rf /home/massigy/.local/share/mmtime 
-
-create_directories: 
-	mkdir /home/massigy/.config/mmtime 2>/dev/null
-	mkdir /home/massigy/.local/share/mmtime 2>/dev/null
-
-setup_files_ownership: 
-	chown -R massigy:massigy /home/massigy/.config/mmtime
-	chown -R massigy:massigy /home/massigy/.local/share/mmtime
-
-
-make_bin_global: 
-	cp bin/mmtime /usr/local/bin/ 
-	#ln -s /home/massigy/.local/share/mmtime/mmtime /usr/local/bin/mmtime 
+make_bin_shared: 
+	ln -s $(shell pwd)/bin/${BINARY_NAME} ${SHARED_DIR}/${BINARY_NAME}
+	echo "The ${BINARY_NAME} binary file can be found in ${SHARED_DIR}"
+	echo ""
 
 launch: 
-	mmtime &	
+	${SHARED_DIR}/${BINARY_NAME}
 
-build: clean compile clean_directories create_directories 
+build: clean compile 
 
-install: make_bin_global launch setup_files_ownership
+setup: 
+	bash ./scripts/setup_config_dir.sh 
+	bash ./scripts/setup_targets_file.sh 
 
-rm_global_bin:
-	rm -rf /usr/local/bin/mmtime
+	echo ""
 
-rm_local_bin:
-	rm -rf /home/massigy/.local/share/mmtime/mmtime
+	bash ./scripts/setup_shared_dir.sh
+	bash ./scripts/setup_db_file.sh
+
+install: setup make_bin_shared launch 
+
+rm_local_bin: 
+	rm -rf ${SHARED_DIR}/${BINARY_NAME}
+	echo ""
 
 
-uninstall: rm_global_bin rm_local_bin clean_directories
+
+
+uninstall: rm_local_bin 
+	rm -rf ${CONFIG_DIR}
+	rm -rf ${SHARED_DIR}
+	echo ""
 
 
 

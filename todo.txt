@@ -1,6 +1,4 @@
 TODOS:
-- Make the program use env info rather then hardcoded values.
-- Make the program create file that return the ownership back to the user.
 - Make the logging use my async logger program
 
 Bonus: 
