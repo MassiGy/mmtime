@@ -1,6 +1,4 @@
 TODOS:
-- See which signal is sent to the process. Check if SIGSTOP is sent to the process on hibernation/suspend, 
-and check if SIGCONT is sent to the process on hibernation/suspend wake up. 
 
 Bonus: 
 - Create an applet for this little program (https://bazaar.launchpad.net/~geod/indicator-workspaces/main/view/head:/indicator-workspaces)
@@ -15,4 +13,11 @@ i.e  if time.Since(lastMonitor) > hypotherical_sys_hibernation_min_time then hib
 Which means that I won't consider a hibernation/suspend unless there is a 6 minute sudden offset between two monitoring
 instants.
 Links: https://help.ubuntu.com/community/PowerManagement/ReducedPower
+
+- As for signals, I beilive that in linux, on suspend/hibenation proceses receive a SIGSTOP from the system, and 
+then on system wake up, they receive a SIGCONT. On shutdown, they receive a SIGTERM, and if they persist for long
+the system sends a SIGKILL to finish the process. So you can not easily log that with your program, since SIGSTOP 
+and SIGKILL can not be trapped (handled as wanted). Besides, that explains how processes continue thier job just
+after the system wakeup after a hibernation/suspend.  
+
 
