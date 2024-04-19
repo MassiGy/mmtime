@@ -26,6 +26,7 @@ make_bin_shared:
 
 	bash ./scripts/setup_aliases.sh;
 	echo "Added ${BINARY_NAME} aliases to .bashrc|.bash_aliases|.zshrc|.zsh_aliases";
+	echo "you can run the program by using this command: $ ${BINARY_NAME}"
 
 launch: 
 	${SHARED_DIR}/${BINARY_NAME}
@@ -41,7 +42,7 @@ setup:
 	bash ./scripts/setup_db_file.sh
 	bash ./scripts/setup_log_file.sh
 
-install: setup make_bin_shared launch 
+install: setup make_bin_shared  
 
 rm_local_bin: 
 	rm -rf ${SHARED_DIR}/${BINARY_NAME}
