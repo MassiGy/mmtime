@@ -39,6 +39,7 @@ setup:
 
 	bash ./scripts/setup_shared_dir.sh
 	bash ./scripts/setup_db_file.sh
+	bash ./scripts/setup_log_file.sh
 
 install: setup make_bin_shared launch 
 

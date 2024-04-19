@@ -16,12 +16,25 @@ import (
 	"time"
 )
 
+var logFile *os.File
+
 func main() {
-	filename := os.Getenv("HOME") + "/.config/" + vars.GetDirName() + "/targets"
+	var err error // one time use
+	logFile, err = os.OpenFile(
+		os.Getenv("HOME")+"/.local/share/"+vars.GetDirName()+"/logs",
+		os.O_APPEND|os.O_RDWR|os.O_CREATE,
+		0666,
+	)
+	utils.Check(err)
+	defer logFile.Close()
+
 	tasks := getTasksFromConf()
 
 	if len(tasks) == 0 {
-		panic(filename + " should not be blank! (Read the README.md for a proper setup).")
+		panic(
+			os.Getenv("HOME") + "/.config/" + vars.GetDirName() + "/targets" +
+				" should not be blank! (Read the README.md for a proper setup).",
+		)
 	}
 
 	// monitorTasks(&tasks) // fst call to register tasks
@@ -218,11 +231,19 @@ func monitorTasks(tasks *[]types.Task) {
 	}
 
 	// log the tasks
-	fmt.Println("----------Logging all tasks---------------")
+	logFile.WriteString("\n@" + time.Now().String())
+	logFile.WriteString("\n----------------------------------Logging all tasks-------------------------------\n")
 	for _, task := range *tasks {
-		fmt.Println(task)
+		logFile.WriteString(
+			fmt.Sprintf("%s\t%v\t%v\t%v\n",
+				task.Name,
+				task.LaunchedAt,
+				task.Running,
+				task.UsedFor,
+			),
+		)
 	}
-	fmt.Println("------------------------------------------")
+	logFile.WriteString("----------------------------------------------------------------------------------\n")
 }
 
 func saveCurrentStats(tasks []types.Task) {
@@ -269,5 +290,4 @@ func saveCurrentStats(tasks []types.Task) {
 			),
 		)
 	}
-
 }
