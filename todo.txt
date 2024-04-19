@@ -1,8 +1,18 @@
 TODOS:
 
 Bonus: 
-- Create an applet for this little program (https://bazaar.launchpad.net/~geod/indicator-workspaces/main/view/head:/indicator-workspaces)
-
+- Create an applet for this little program. For the applet, you can either:
+- use python and appindicator (https://fosspost.org/custom-system-tray-icon-indicator-linux, https://bazaar.launchpad.net/~geod/indicator-workspaces/main/view/head:/indicator-workspaces)
+- use python through Qt.
+- use python and gtk (https://bazaar.launchpad.net/~geod/indicator-workspaces/main/view/head:/indicator-workspaces)
+- use python and the python-eggtrayicon deb package (https://stackoverflow.com/questions/1203451/how-to-write-an-application-for-the-system-tray-in-linux)
+- use java through the TrayIcon object (https://docs.oracle.com/javase%2F8%2Fdocs%2Fapi%2F%2F/java/awt/TrayIcon.html, https://stackoverflow.com/questions/52530470/java-11-executing-source-file-via-shebang-is-not-working) 
+- use GtkStatusIcon (maybe deprecated)
+- ( BEST ) use bash and cli tools like alltray and yad (https://funprojects.blog/2022/06/12/apps-and-scripts-in-the-system-tray/)  
+``
+    # using alltray 
+    alltray  "xterm -hold -T 'Top Processes' -e 'tail -$(wc --lines ~/.config/mmtime-v0.1/targets) ~/.local/share/mmtime-v0.1/targets.stats.db'"
+``
 
 Notes:
 - To act on power mode change, you need to add hooks for power mode changement, or you can setup a hypotherical

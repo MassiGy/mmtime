@@ -23,8 +23,7 @@ time. i.e
 The `mmtime` tool will then track all the time spent on these applications and write that to a 
 db file (`~/.local/share/mmtime-vX.X/targets.stats.db`).
 
-Besides, while `mmtime` is running in the background, the user can go to thier web browser and check
-thier current stats by visiting the `localhost:9999` address.
+Besides, there will be a system tray applet that will allow the user to see the current monitoring related stats, this will give the user the ability to see the stats live and also through a menu item reload the configuration file (`targets` file).
 
 ## Setup & Installation
 
