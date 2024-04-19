@@ -16,7 +16,9 @@ import (
 	"time"
 )
 
+var tickCycle time.Duration
 var logFile *os.File
+var hypotherical_sys_suspend_min_time time.Duration = 6 * time.Minute
 
 func main() {
 	var err error // one time use
@@ -40,7 +42,7 @@ func main() {
 	// monitorTasks(&tasks) // fst call to register tasks
 
 	// setup a ticker to listen to
-	tickCycle := 10 * time.Second
+	tickCycle = 10 * time.Second
 	ticker := time.NewTicker(tickCycle)
 
 	// create a channel to which POSIX signals will be deleivered to
@@ -119,7 +121,6 @@ func main() {
 					tasks[i].LaunchedAt = time.Now()
 					tasks[i].UsedFor = time.Since(tasks[i].LaunchedAt)
 				}
-
 			}
 		case <-sigAbrt:
 			{
@@ -218,7 +219,11 @@ func monitorTasks(tasks *[]types.Task) {
 					(*tasks)[i].LaunchedAt = time.Now()
 					continue
 				}
-
+				if time.Since(task.LaunchedAt) > task.UsedFor+hypotherical_sys_suspend_min_time {
+					// there was a discontinuety in execution, maybe a system
+					// hibernation/suspend mode
+					(*tasks)[i].LaunchedAt = time.Now().Add(-(*tasks)[i].UsedFor)
+				}
 				(*tasks)[i].UsedFor = time.Since((*tasks)[i].LaunchedAt)
 			}
 		}
@@ -237,7 +242,7 @@ func monitorTasks(tasks *[]types.Task) {
 		logFile.WriteString(
 			fmt.Sprintf("%s\t%v\t%v\t%v\n",
 				task.Name,
-				task.LaunchedAt,
+				task.LaunchedAt.Format("2006-01-02"),
 				task.Running,
 				task.UsedFor,
 			),

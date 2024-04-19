@@ -1,12 +1,18 @@
 TODOS:
-- Write the logs to a file ~/.local/share/mmtime/mmtime.log and then on system wake up from hibernation 
-or suspend, see which signal is sent to the process.
-Check if SIGSTOP is sent to the process on hibernation/suspend, and check if SIGCONT is sent to the process 
-on hibernation/suspend wake up. 
+- See which signal is sent to the process. Check if SIGSTOP is sent to the process on hibernation/suspend, 
+and check if SIGCONT is sent to the process on hibernation/suspend wake up. 
 
 Bonus: 
 - Create an applet for this little program (https://bazaar.launchpad.net/~geod/indicator-workspaces/main/view/head:/indicator-workspaces)
 
 
 Notes:
-- To act on power mode change, you need to add hooks for power mode changement; https://help.ubuntu.com/community/PowerManagement/ReducedPower
+- To act on power mode change, you need to add hooks for power mode changement, or you can setup a hypotherical
+syspension/hibernation minimum time and then check if the last time you've monitored a task is before current time 
+by that hypotherical period or not, if that is the case then you can assume that there was a suspend/hibenation.
+i.e  if time.Since(lastMonitor) > hypotherical_sys_hibernation_min_time then hibenation_occured = true
+(NOTE): that is what I implemented to check for hibernation/suspend. I set a hypotherical min time period of 6 min.
+Which means that I won't consider a hibernation/suspend unless there is a 6 minute sudden offset between two monitoring
+instants.
+Links: https://help.ubuntu.com/community/PowerManagement/ReducedPower
+
