@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 
 if [  ! -d  $HOME/.config/$(cat ./BINARY_NAME)-$(cat ./VERSION) ]; then
