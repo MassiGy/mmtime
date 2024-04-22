@@ -68,5 +68,14 @@ process and the applet. ( See if we need to kill the deamon process too )
     the displayed content ( this is rather heavy but that was my intent in the first place with alltray )
 
 
+- How to kill the parent yad dialog through a menu item action ? 
+    Some solutions:
+    * Killall instances of yad. This will of course kill all the other applications that use yad.
+    * Figure out how to use the YAD_PID; 
+    ``
+        https://groups.google.com/g/yad-common/c/FPmSpoizb6M
+    ``
+    * Figure out a way to retreive the pid through a shell command, but this is really annoying since it gets quiet tidious with
+    all the scripts embedding inside of quoats.
 
 

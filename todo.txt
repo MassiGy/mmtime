@@ -1,7 +1,7 @@
 TODOS:
-- Check why the used ps command is not working on linux as it was on WSL.
-- Yad --text proprety seems to cache the text, see how to disable that in order to rehydrate the text
-- Add the yad script  to the shared directory.
+- Change the Quit menu item action to be more specific, since right now it just kills all the running yad instances.
+- Change the See Stats menu item action to be more dynamic, do not just read a fixed number of lines.
+- Maybe make the applet a symlink too to be consistent with what we've did with the mmtime binary. 
 
 Bonus: 
 - Create an applet for this little program. For the applet, you can either:
