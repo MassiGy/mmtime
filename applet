@@ -1,0 +1,13 @@
+
+CONFIG_DIR=${HOME}/.config/${BINARY_NAME}-${VERSION}
+SHARED_DIR=${HOME}/.local/share/${BINARY_NAME}-${VERSION}
+ABOUT_CONTENT=$(cat ~/.local/share/${BINARY_NAME}-${VERSION}/about)
+
+# SOURCE : https://funprojects.blog/2022/06/12/apps-and-scripts-in-the-system-tray/
+
+yad --notification --image="appointment-new-symbolic" \
+ --command="yad --text='$ABOUT_CONTENT' --title='${BINARY_NAME}' --geometry=700x100+600+200 --button=OK" \
+ --menu="See Stats! xterm -bg white -fg black -hold -geometry 100x32+600+200 -fa Monospace -fs 10 -T '${BINARY_NAME} logs' -e ' watch tail --lines 28 ~/.local/share/${BINARY_NAME}-${VERSION}/logs' \
+       |Reload Config ! bash -c 'kill -SIGUSR1 $(pgrep ${BINARY_NAME}) ' \
+       |Quit !  killall yad" \
+ --text="${BINARY_NAME} applet"

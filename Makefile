@@ -25,8 +25,8 @@ make_bin_shared:
 	@echo "The ${BINARY_NAME} binary file can be found in ${SHARED_DIR}";
 	@echo ""
 	bash ./scripts/setup_aliases.sh;
-	@echo "Added ${BINARY_NAME} aliases to .bashrc|.bash_aliases|.zshrc|.zsh_aliases";
-	@echo "you can run the program by using this command: ${BINARY_NAME}"
+	@echo "Added ${BINARY_NAME} and ${BINARY_NAME}-applet aliases to .bashrc|.bash_aliases|.zshrc|.zsh_aliases";
+	@echo "you can run the program by using this command: ${BINARY_NAME} and ${BINARY_NAME}-applet "
 
 launch: 
 	${SHARED_DIR}/${BINARY_NAME}
@@ -43,6 +43,7 @@ setup:
 	bash ./scripts/setup_db_file.sh
 	bash ./scripts/setup_about_file.sh
 	bash ./scripts/setup_log_file.sh
+	bash ./scripts/setup_applet_file.sh
 
 install: setup make_bin_shared  
 
