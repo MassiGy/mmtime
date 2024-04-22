@@ -34,11 +34,14 @@ launch:
 build: clean compile 
 
 setup: 
+	@echo ""
+	@echo "Setting up the config and local shared directories, and the appropriate files."
 	bash ./scripts/setup_config_dir.sh 
 	bash ./scripts/setup_targets_file.sh 
 
 	bash ./scripts/setup_shared_dir.sh
 	bash ./scripts/setup_db_file.sh
+	bash ./scripts/setup_about_file.sh
 	bash ./scripts/setup_log_file.sh
 
 install: setup make_bin_shared  

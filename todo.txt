@@ -1,4 +1,7 @@
 TODOS:
+- Check why the used ps command is not working on linux as it was on WSL.
+- Yad --text proprety seems to cache the text, see how to disable that in order to rehydrate the text
+- Add the yad script  to the shared directory.
 
 Bonus: 
 - Create an applet for this little program. For the applet, you can either:

@@ -182,8 +182,7 @@ func getTasksFromConf() []types.Task {
 }
 
 func monitorTasks(tasks *[]types.Task) {
-
-	shellCommand := "ps -axco command| tail -n +2|uniq"
+	shellCommand := "ps -axco command | tail -n +2 | sort | uniq"
 	shellInterpreter := "bash"
 
 	var cmdStdOut bytes.Buffer
@@ -238,9 +237,10 @@ func monitorTasks(tasks *[]types.Task) {
 	// log the tasks
 	logFile.WriteString("\n@" + time.Now().String())
 	logFile.WriteString("\n----------------------------------Logging all tasks-------------------------------\n")
+	logFile.WriteString("Process\t\tDate\t\tRunning\tUsage\n")
 	for _, task := range *tasks {
 		logFile.WriteString(
-			fmt.Sprintf("%s\t%v\t%v\t%v\n",
+			fmt.Sprintf("%s\t\t%v\t%v\t%v\n",
 				task.Name,
 				task.LaunchedAt.Format("2006-01-02"),
 				task.Running,
