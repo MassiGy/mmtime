@@ -22,10 +22,3 @@ VERSION=$VERSION
     # add execute permissions to the file.
     chmod +x $HOME/.local/share/$(cat ./BINARY_NAME)-$(cat ./VERSION)/${BINARY_NAME}-applet;
 fi
-
-
-
-
-	# ln -s $(shell pwd)/applet ${SHARED_DIR}/${BINARY_NAME}-applet;
-	# @echo "The ${BINARY_NAME}-applet  file can be found in ${SHARED_DIR}";
-	# @echo ""
