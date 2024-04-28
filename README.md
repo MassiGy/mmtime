@@ -25,7 +25,7 @@ db file (`~/.local/share/mmtime-vX.X/targets.stats.db`).
 
 Besides, there will be a system tray applet that will allow the user to see the current monitoring related stats, this will give the user the ability to see the stats live and also through a menu item reload the configuration file (`targets` file).
 
-## Setup & Installation
+## Setup & Installation ( Using Go tools )
 
 ```sh
 
@@ -35,7 +35,7 @@ Besides, there will be a system tray applet that will allow the user to see the 
     [[ "$HOSTNAME" == "fedora" ]] && sudo dnf install xterm
 
 
-    # build the binary 
+    # build the binary (this requires Go to be installed )
     make build
 
     # setup the environment and mv the binary to ~/.local/share
@@ -45,6 +45,25 @@ Besides, there will be a system tray applet that will allow the user to see the 
     # to /usr/local/bin, or directly copy the binary to it.
 
 ```
+
+## Setup & Installation ( Without Go tools )
+
+First, download from Github the latest release. 
+
+```sh
+
+    # clone the repo
+    git clone <repo_url>
+
+    # download from github the latest release
+
+    # move the binary of the release to the project /bin directory
+
+    # run make install 
+    make install
+
+```
+
 
 ## Uninstall 
 
