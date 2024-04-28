@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"mmtime/types"
 	"mmtime/utils"
-	"mmtime/vars"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -20,10 +19,15 @@ var tickCycle time.Duration
 var logFile *os.File
 var hypotherical_sys_suspend_min_time time.Duration = 6 * time.Minute
 
+// will be assigned by the build ldflags
+var binary_name string
+var version string
+
 func main() {
+
 	var err error // one time use
 	logFile, err = os.OpenFile(
-		os.Getenv("HOME")+"/.local/share/"+vars.GetDirName()+"/logs",
+		os.Getenv("HOME")+"/.local/share/"+GetDirName()+"/logs",
 		os.O_APPEND|os.O_RDWR|os.O_CREATE,
 		0666,
 	)
@@ -34,12 +38,10 @@ func main() {
 
 	if len(tasks) == 0 {
 		panic(
-			os.Getenv("HOME") + "/.config/" + vars.GetDirName() + "/targets" +
+			os.Getenv("HOME") + "/.config/" + GetDirName() + "/targets" +
 				" should not be blank! (Read the README.md for a proper setup).",
 		)
 	}
-
-	// monitorTasks(&tasks) // fst call to register tasks
 
 	// setup a ticker to listen to
 	tickCycle = 10 * time.Second
@@ -134,7 +136,7 @@ func getTasksFromConf() []types.Task {
 
 	// load the tokens from the file to a slice of tasks
 	tasks := []types.Task{}
-	filename := os.Getenv("HOME") + "/.config/" + vars.GetDirName() + "/targets"
+	filename := os.Getenv("HOME") + "/.config/" + GetDirName() + "/targets"
 
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	utils.Check(err)
@@ -253,7 +255,7 @@ func monitorTasks(tasks *[]types.Task) {
 
 func saveCurrentStats(tasks []types.Task) {
 	// db file
-	filename := os.Getenv("HOME") + "/.local/share/" + vars.GetDirName() + "/targets.stats.db"
+	filename := os.Getenv("HOME") + "/.local/share/" + GetDirName() + "/targets.stats.db"
 
 	// open the file for RW(do not create to add the desc comment at first)
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
@@ -295,4 +297,8 @@ func saveCurrentStats(tasks []types.Task) {
 			),
 		)
 	}
+}
+
+func GetDirName() string {
+	return binary_name + "-" + version
 }

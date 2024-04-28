@@ -8,7 +8,7 @@ clean:
 	rm -rf bin/* 
 
 compile:
-	go build -o bin/${BINARY_NAME} cmd/main.go
+	go build -o bin/${BINARY_NAME} -ldflags "-X main.version=${VERSION} -X main.binary_name=${BINARY_NAME}" cmd/main.go
 
 runbin:
 	./bin/${BINARY_NAME}
@@ -21,7 +21,7 @@ test:
 
 
 make_bin_shared: 
-	ln -s $(shell pwd)/bin/${BINARY_NAME} ${SHARED_DIR}/${BINARY_NAME};
+	cp $(shell pwd)/bin/${BINARY_NAME} ${SHARED_DIR}/${BINARY_NAME};
 	@echo "The ${BINARY_NAME} binary file can be found in ${SHARED_DIR}";
 	@echo ""
 	bash ./scripts/setup_aliases.sh;
@@ -31,7 +31,13 @@ make_bin_shared:
 launch: 
 	${SHARED_DIR}/${BINARY_NAME}
 
-build: clean compile 
+build: clean compile
+
+buildprod: 
+	@make clean
+	@echo "Building a static executable..."
+	CGO_ENABLED=0 go build -a -tags netgo,osusergo -ldflags "-X main.version=${VERSION} -X main.binary_name=${BINARY_NAME} -extldflags '-static -s -w'" -o bin/mmtime cmd/main.go 
+
 
 setup: 
 	@echo ""
@@ -49,10 +55,6 @@ install: setup make_bin_shared
 
 rm_local_bin: 
 	rm -rf ${SHARED_DIR}/${BINARY_NAME}
-
-
-
-
 
 uninstall: rm_local_bin 
 	rm -rf ${CONFIG_DIR}
