@@ -29,10 +29,10 @@ Besides, there will be a system tray applet that will allow the user to see the 
 
 ```sh
 
-    # make sure that you have xterm installed (for some use these commands)
-    [[ "$HOSTNAME" == "debian" ]] && sudo apt install xterm
-    [[ "$HOSTNAME" == "ubuntu" ]] && sudo apt install xterm
-    [[ "$HOSTNAME" == "fedora" ]] && sudo dnf install xterm
+    # make sure to install xterm & yad (for some use these commands)
+    [[ "$HOSTNAME" == "debian" ]] && sudo apt install xterm yad
+    [[ "$HOSTNAME" == "ubuntu" ]] && sudo apt install xterm yad
+    [[ "$HOSTNAME" == "fedora" ]] && sudo dnf install xterm yad
 
 
     # build the binary (this requires Go to be installed )
